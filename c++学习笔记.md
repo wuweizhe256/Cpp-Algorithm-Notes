@@ -235,10 +235,30 @@ cout<<m.size()//获取长度
 set集合内元素互异，且按从大到小排序
 
 ```c++
-set<int> s;
-s.insert(x);
+//需要有序遍历、找最小最大：用 set
+set<int> s; //有序 O(log n)
+s.insert(x); //复杂度：O(1)
 s.find(x);
-s.erase(x);
+s.erase(x); //复杂度：O(1)
+//只需要判断存在，或者去重，不需要排序：用 unordered_set
+unordered_set<int> st;
+unordered_set<string> words;//哈希表，无序 O(1)
+
+//初始化
+unordered_set<string> words = {"leet", "code"};
+unordered_set<string> b(wordDict.begin(), wordDict.end()); //vector<string>& wordDict
+
+st.count(x) //存在返回1，不存在返回0；复杂度：O(1)
+if (st.find(x) != st.end()) { //复杂度：O(1)
+    cout << "找到了";
+}
+ //遍历
+for (auto x : st) { 
+    cout << x << " ";
+}
+for (unordered_set<string>::iterator it = st.begin(); it != st.end(); it++) {
+    cout << *it << endl;
+}
 ```
 
 #### 其他写法
