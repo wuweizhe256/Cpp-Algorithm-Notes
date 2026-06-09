@@ -1588,7 +1588,57 @@ int main(){
 }
 ```
 
-### 线性dp
+### 数字三角形模型
+
+![image-20260608230443582](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260608230443582.png)
+
+```
+```
+
+![image-20260608233344284](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260608233344284.png)
+
+f[i.j] ：从（1，1）走到（i，j）的所有路线最大值
+
+````c++
+int n;
+int w[N][N];
+int f[N][N];
+int main()
+{
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n; j ++ )
+            scanf("%d", &w[i][j]);
+//求最大值不用考虑初始化    
+    for(int i=1;i<=n;i++){
+        for(int j=1;j<=m;j++){
+            f[i][j]=max(f[i-1][j],f[i][j-1])+w[i][j];
+        }
+    }
+    
+//求最小值要考虑初始化
+    for (int i = 1; i <= n; i ++ )
+        for (int j = 1; j <= n; j ++ )
+            if (i == 1 && j == 1) f[i][j] = w[i][j];    // 特判左上角
+            else
+            {
+                //特殊处理第一行第一列，因为之外为0
+                f[i][j] = INF;
+                if (i > 1) f[i][j] = min(f[i][j], f[i - 1][j] + w[i][j]);   // 只有不在第一行的时候，才可以从上面过来
+                if (j > 1) f[i][j] = min(f[i][j], f[i][j - 1] + w[i][j]);   // 只有不在第一列的时候，才可以从左边过来
+            }
+    printf("%d\n", f[n][n]);
+    return 0;
+}
+````
+
+
+
+
+
+
+
+
 
 ==最长上升子序列模型==
 
