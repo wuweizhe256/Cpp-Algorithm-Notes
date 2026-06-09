@@ -1592,7 +1592,23 @@ int main(){
 
 ![image-20260608230443582](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260608230443582.png)
 
-```
+```c++
+class Solution {
+public:
+    int minimumTotal(vector<vector<int>>& triangle) {
+        int n = triangle.size();
+        vector<int> f(n, 0);//一维优化，因为只依赖下一层
+        for (int j = 0; j < n; j++) {
+            f[j] = triangle[n - 1][j];
+        }
+        for (int i = n - 2; i >= 0; i--) {
+            for (int j = 0; j <= i; j++) {
+                f[j] = min(f[j], f[j + 1]) + triangle[i][j];
+            }
+        }
+        return f[0];
+    }
+};
 ```
 
 ![image-20260608233344284](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260608233344284.png)
@@ -1631,6 +1647,34 @@ int main()
     return 0;
 }
 ````
+
+一维优化版
+
+```c++
+//求最大值
+f[1] = 0;
+for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= m; j++) {
+        f[j] = max(f[j], f[j - 1]) + w[i][j];
+    }
+}
+cout << f[m] << endl;
+//求最小值 
+for (int i = 0; i < n; i++) {  //f[j]代表从上面来，f[j-1]代表从左边来
+            for (int j = 0; j < m; j++) {
+                if (i == 0 && j == 0) {
+                    f[j] = grid[i][j];
+                } else if (i == 0) {
+                    f[j] = f[j - 1] + grid[i][j];
+                } else if (j == 0) {
+                    f[j] = f[j] + grid[i][j];
+                } else {
+                    f[j] = min(f[j], f[j - 1]) + grid[i][j];
+                }
+            }
+        }
+        return f[m - 1];
+```
 
 
 
