@@ -2,11 +2,13 @@
 
 ### 须知
 
-RE考虑以下函数返回值是不是写错了
+RE考虑一下：1.函数返回值是不是写错了 2.数组开够了吗 3.vector初始化没有
+
+Output Limit Exceeded 输出太多：1.是不是循环没出口 2.没return 0 
 
 c++11 有auto关键字,unordered_map、unordered_set
 
-c++98 priority_queue
+c++98 priority_queue 
 
 ```c++
 #define endl '\n'
@@ -1642,6 +1644,8 @@ int main(){
 
 一个地图内 一个点到另一个点的距离
 
+描述：输出一条从左上角(0,0)到右下角（n-1，n-1）的最短路线
+
 ```c++
 #include <bits/stdc++.h>
 using namespace std;
@@ -1670,7 +1674,7 @@ void bfs(int sx,int sy){
 				if(pre[a][b].x!=-1) continue;
 			
 				q[++tt]={a,b};
-				pre[a][b]=t;
+				pre[a][b]=t;//记录上一个状态
 			}
 		
 	}
@@ -1689,7 +1693,7 @@ int main(){
 	PII end(0,0);
 	while(true){
 		cout<<end.x<<" "<<end.y<<endl;
-		if(end.x==n-1&&end.y==n-1) break;
+		if(end.x==n-1&&end.y==n-1) break; //这个要按顺序输出路径上的的点
 		end=pre[end.x][end.y];
 	}
 	return 0;
@@ -1700,18 +1704,22 @@ int main(){
 
 一种地图状态转换到另一种状态最少要几步
 
+描述：找到从初始状态到目标状态的最小操作数
+
+![image-20260610091012238](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260610091012238.png)
+
 ```c++
 #include <bits/stdc++.h>
 using namespace std;
-unordered_map<string,int> dist;
-unordered_map<string,pair<char,string>> pre;
+unordered_map<string,int> dist; //用哈希表存步数
+unordered_map<string,pair<char,string>> pre; //记录从哪个状态转移来的，并记录什么操作
 queue<string> q;
 char g[2][4];
-void set1(string start){
+void set1(string start){ //把字符串放回g数组
 	for(int i=0;i<4;i++) g[0][i]=start[i];
 	for(int i=3,j=4;i>=0;i--,j++) g[1][i]=start[j];
 }
-string get(){
+string get(){ //把g数组内容转为字符串
 	string res;
 	for(int i=0;i<4;i++) res+=g[0][i];
 	for(int i=3;i>=0;i--) res+=g[1][i];
@@ -1749,14 +1757,14 @@ void bfs(string start,string end){
 		auto t=q.front();
 		q.pop();
 		string m[3];
-		m[0]=move1(t);
+		m[0]=move1(t); //记录三种操作后的序列
 		m[1]=move2(t);
 		m[2]=move3(t);
 		for(int i=0;i<3;i++){
 			string m1=m[i];
-			if(dist.count(m1)==0){
+			if(dist.count(m1)==0){ //未遍历过就加入
 				dist[m1]=dist[t]+1;
-				pre[m1]={char(i+'A'),t};
+				pre[m1]={char(i+'A'),t};//记一下来源
 				if(m1==end) break;
 				q.push(m1);
 			}
@@ -1768,20 +1776,20 @@ int main(){
 	int x;
 	for(int i=0;i<8;i++){
 		cin>>x;
-		end+=char(x+'0');
+		end+=char(x+'0');  //把数字i变成字符i
 	}
 	for(int i=0;i<8;i++){
-		start+=char(i+'1');
+		start+=char(i+'1'); //初始化start
 	}
 	bfs(start,end);
 	cout<<dist[end]<<endl;
 	string res;
-	while(end!=start){
-		res+=pre[end].first;
-		end=pre[end].second;
-	}
-	reverse(res.begin(),res.end());
-	if(res.size()) cout<<res<<endl;
+	while(end!=start){ //当前状态不为最终状态
+		res+=pre[end].first;  //操作编号
+		end=pre[end].second; //序列
+	} 
+	reverse(res.begin(),res.end()); //倒着记录的，要反过来
+	if(res.size()) cout<<res<<endl; //长度>0才输出
 	return 0;
 }
 ```
@@ -2305,6 +2313,29 @@ int main() {
 }
 ```
 
+==石子合并==
+
+![image-20260610093604396](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260610093604396.png)
+
+```c++
+int s[N];
+int f[N][N]
+for(int i=1;i<=n;i++) cin>>s[i];
+for(int i=1;i<=n;i++) s[i]+=s[i-1]; //做前缀和
+for(int len=2;len<=n;len++){ //按长度从小到大枚举所有状态
+    for(int i=1;i+len-1<=n;i++){ //枚举起点
+        int l=i,r=i+len-1;
+        f[l][r]=1e8;
+        for(int k=l;k<r;k++){
+            f[l][r]=min(f[l][r],f[l][k]+f[k+1][r]+s[r]-s[l-1]);
+        }
+    }
+    cout<<f[1][n];
+}
+```
+
+
+
 ==环形区间==
 
 ```c++
@@ -2607,7 +2638,7 @@ bool canJump(vector<int>& nums) {
 
 1.从小到大排序 sort(a,a+n);
 
-2.（绝对值）据每个点距离最小，奇数：中位数  偶数：中间两数中间
+2.货站选址问题，找（绝对值）据每个点距离最小，奇数：中位数  偶数：中间两数中间
 
 ```c++
 sort(a,a+n);
@@ -2644,14 +2675,5 @@ int main(){
 	return 0;
 }
 ```
-
-
-
-
-
-
-
-
-
 
 
