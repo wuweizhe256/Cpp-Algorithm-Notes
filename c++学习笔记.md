@@ -125,6 +125,27 @@ while (l < s.size()) {  //用指针记录替代erase
 
 sort(s.begin(), s.end()); //复杂度：O(n log n)
 reverse(s.begin(), s.end()); //复杂度：O(n)
+
+//大小写转换相关
+s[i]=toupper(s[i]); //转大写
+s[i]=tolower(s[i]) //转小写
+    
+string s,s1,s2;
+s2+=s;//拼接字符串
+s<s1//按字典序比较
+str1.compare(str2)==0;
+s.size()  s.length()//获取长度
+s.substr(n,m);//从第n个位置截m个字符
+s.substr(n);//从第n个字符往后的字符全部截取
+
+s.insert(n,s1);//在第n个位置前插入字符串s1
+s.erase(1,3);//把1-3字符串删掉
+
+s.find(s2,m);//从第m个位置搜索字符串s2
+s.find("de");//找到返回d第一次出现位置，未找到返回-1
+s,rfind("de");//find从左往右，rfind从右往左
+//替换
+s.replace(1,3,"111111");
 ````
 
 
@@ -392,33 +413,7 @@ int main(){
 ```c++
 ```
 
-
-
-### 大小写转换+字符串操作
-
-```c++
-s[i]=toupper(s[i]); //转大写
-s[i]=tolower(s[i]) //转小写
-    
-string s,s1,s2;
-s2+=s;//拼接字符串
-s<s1//按字典序比较
-str1.compare(str2)==0;
-s.size()  s.length()//获取长度
-s.substr(n,m);//从第n个位置截m个字符
-s.substr(n);//从第n个字符往后的字符全部截取
-
-s.insert(n,s1);//在第n个位置前插入字符串s1
-s.erase(1,3);//把1-3字符串删掉
-
-s.find(s2,m);//从第m个位置搜索字符串s2
-s.find("de");//找到返回d第一次出现位置，未找到返回-1
-s,rfind("de");//find从左往右，rfind从右往左
-//替换
-s.replace(1,3,"111111");
-```
-
-## 算法
+## 数学知识
 
 ### 素数判定
 
@@ -433,6 +428,177 @@ bool isprime(int x){
     return 1;
 }
 ````
+
+### 分解质因数
+
+描述:12 = 2^2 * 3^1  
+
+输出:2 2
+
+​     3 1   
+
+````c++
+void divide(int n){  //n种最多只包含一个大于sqrt(n)的质因子
+   for(int i=2;i<=n/i;i++){
+       if(n%i==0){ //i一定为质数
+           int s=0;
+           while(n%i==0){
+               n/=i;
+               s++;
+           }
+           cout<<i<<" "<<s;
+       }
+   }
+   if(n>1) cout<<n<<" "<<1;
+}  //复杂度：O(sqrt(n))
+````
+
+### 最大公因数
+
+```c++
+ll gcd(ll a, ll b) {
+    return b ? gcd(b, a % b) : a;
+}
+```
+
+### 快速幂
+
+````c++
+// 计算 (base^exp) % mod 的值
+long long fastPower(long long base, long long exp, long long mod) {
+    long long result = 1;
+    base %= mod;
+    while (exp > 0) {
+        if (exp & 1) {
+            result = result * base % mod;
+        }
+        base = base * base % mod;
+        exp >>= 1;
+    }
+    return result;
+}
+int main() {
+    long long a = 2, b = 10, m = 1000000007;
+    cout << fastPower(a, b, m) << endl; // 输出 1024
+    return 0;
+}
+````
+
+### 组合数
+
+求C(a, b)
+
+````c++
+const int N=2010,mod=1e9+7;//结果可能比较大，要取模
+void init(){
+    for(int i=0;i<N;i++){
+        for(int j=0;j<=i;j++){
+            if(!j) c[i][j]=1;
+            else c[i][j]=(c[i-1][j]+c[i-1][j-1])%mod;
+        }
+    }
+}
+//最后求就输出c[a][b]
+````
+
+### Stirling 数
+
+假定有 S(n, m)种不同方法把 n 个元素的集合划分成 m 个非空子集构成的集合:
+$$
+S(n, m) = m \cdot S(n-1, m) + S(n-1, m-1)
+$$
+
+```c++
+const int N = 1010;
+const int mod = 1e9 + 7;
+ll S[N][N];
+void init() {
+    S[0][0] = 1;
+    for (int i = 1; i < N; i++) {
+        for (int j = 1; j <= i; j++) {
+            S[i][j] = (S[i - 1][j - 1] + j * S[i - 1][j] % mod) % mod;
+        }
+    }
+}
+```
+
+### 高斯消元解方程
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 110;
+const double eps = 1e-8;
+int n;
+double a[N][N];
+int gauss() {
+    int r = 0; // 当前处理到第几行
+    for (int c = 0; c < n; c++) { // 枚举每一列，也就是每个变量
+        int t = r;
+        // 1. 找当前列绝对值最大的一行
+        for (int i = r; i < n; i++) {
+            if (fabs(a[i][c]) > fabs(a[t][c])) {
+                t = i;
+            }
+        }
+        // 这一列全是 0，说明这个变量没法作为主元
+        if (fabs(a[t][c]) < eps) {
+            continue;
+        }
+        // 2. 把最大的一行换到第 r 行
+        for (int i = c; i <= n; i++) {
+            swap(a[t][i], a[r][i]);
+        }
+        // 3. 把第 r 行的主元变成 1
+        for (int i = n; i >= c; i--) {
+            a[r][i] /= a[r][c];
+        }
+        // 4. 用第 r 行消掉其他行的当前列
+        for (int i = 0; i < n; i++) {
+            if (i != r && fabs(a[i][c]) > eps) {
+                for (int j = n; j >= c; j--) {
+                    a[i][j] -= a[i][c] * a[r][j];
+                }
+            }
+        }
+        r++;
+    }
+    // 如果主元行数小于 n，说明不是唯一解
+    if (r < n) {
+        for (int i = r; i < n; i++) {
+            if (fabs(a[i][n]) > eps) {
+                return 2; // 无解
+            }
+        }
+        return 1; // 无穷多解
+    }
+
+    return 0; // 唯一解
+}
+
+int main() {
+    cin >> n;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j <= n; j++) {
+            cin >> a[i][j];
+        }
+    }
+    int t = gauss();
+    if (t == 0) {  //为0就是唯一解
+        for (int i = 0; i < n; i++) {
+            if (fabs(a[i][n]) < eps) a[i][n] = 0;
+            printf("%.2lf\n", a[i][n]);
+        }
+    } else if (t == 1) { //为1就是无穷多解
+        cout << "Infinite group solutions" << endl;
+    } else { //否则无解
+        cout << "No solution" << endl;
+    }
+    return 0;
+}
+```
+
+## 基础算法
 
 ### 二分
 
@@ -895,7 +1061,13 @@ int main(){
 
 ## 图论
 
+![image-20260609215816128](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609215816128.png)
+
 ### dijkstra
+
+![image-20260609220124132](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609220124132.png)
+
+起点固定，求到其他所有点的最短路
 
 朴素dijkstra
 
@@ -1033,7 +1205,9 @@ int main(){
 
 ````
 
-### spfa   一般可以用spfa替代dij，但是被卡就换
+### spfa   
+
+一般可以用spfa替代dij，但是被卡就换
 
 ```c++
 #include <bits/stdc++.h>
@@ -1151,6 +1325,10 @@ int main(){
 
 ### floyd
 
+描述：关键就是起点不固定，求任意两点距离
+
+![image-20260609220902455](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609220902455.png)
+
 ```c++
 #include <bits/stdc++.h>
 using namespace std;
@@ -1171,8 +1349,8 @@ int main(){
 	cin>>n>>m>>q;
 	for(int i=1;i<=n;i++){
 		for(int j=1;j<=n;j++){
-			if(i==j) d[i][j]=0;
-			else d[i][j]=INF;
+			if(i==j) d[i][j]=0;  //d[i][j]即i到j的最短距离
+			else d[i][j]=INF;  
 		}
 	}
 	while(m--){
@@ -1194,6 +1372,8 @@ int main(){
 ## 搜索
 
 ### dfs
+
+#### 全排列
 
 ```c++
 #include <bits/stdc++.h>
@@ -1223,6 +1403,56 @@ int main(){
 }
 ```
 
+#### 组合
+
+```c++
+	vector<vector<int>> combine(int n, int k) {
+       dfs(1,n,k);
+       return ans;
+    }
+    void dfs(int start,int n,int k){
+        if(path.size()==k){
+            ans.push_back(path);
+            return ;
+
+        }
+        for(int i=start;i<=n;i++){
+            path.push_back(i);
+            dfs(i+1,n,k);
+            path.pop_back();
+        }
+    }
+```
+
+#### 括号生成
+
+能够生成所有可能的并且 **有效的** 括号组合。
+
+![image-20260609215007602](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609215007602.png)
+
+```c++
+vector<string> generateParenthesis(int n) {
+        dfs(0,0,n);
+        return ans;
+    }
+    void dfs(int left,int right,int n){
+        if(path.size()==2*n){
+            ans.push_back(path);
+            return;
+        }
+       if(left<n){
+          path.push_back('(');
+          dfs(left+1,right,n);
+          path.pop_back();
+       }
+       if(right<left){
+          path.push_back(')');
+          dfs(left,right+1,n);
+          path.pop_back();
+       }
+    }
+```
+
 ```c++
 ll dfs(ll x){    //记忆化搜索
 	if(x<2){
@@ -1236,11 +1466,181 @@ ll dfs(ll x){    //记忆化搜索
 }
 ```
 
-
-
 ### bfs
 
+#### ==简单迷宫==
+
+描述： *n*×*n*(*n*≤1000) 的地图，0 表示马路，1 表示店铺（不能从店铺穿过），输出从（x1,y1）到(x2,y2)最短距离
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+int n;
+const int N=1001;
+typedef pair<int,int> PII;
+
+char map1[N][N];
+int dist[N][N];
+queue<PII> q;
+int dx[4]={-1,0,1,0};
+int dy[4]={0,1,0,-1};
+
+int bfs(int x1,int y1,int x2,int y2){
+	memset(dist,-1,sizeof dist);//初始化
+	q.push({x1,y1});
+	dist[x1][y1]=0;
+	
+	while(!q.empty()){
+		auto t=q.front();
+		q.pop();
+		int a,b;
+		for(int i=0;i<4;i++){
+			a=t.first+dx[i];
+			b=t.second+dy[i];
+			
+			if(a<=0||a>n||b<=0||b>n) continue; //越界跳过
+			if(dist[a][b]>0) continue; //当前距离更新过了，跳过
+			if(map1[a][b]!='0') continue; //墙壁跳过
+			
+			q.push({a,b});
+			dist[a][b]=dist[t.first][t.second]+1; //更新距离
+			if(a==x2&&b==y2) return dist[a][b]; //终点提前返回
+		}
+	}
+	return dist[x2][y2];
+}
+int main(){
+	scanf("%d",&n);
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=n;j++){
+			cin>>map1[i][j];//scanf("%d",&map1[i][j]);
+		}
+	}
+	int x1,y1,x2,y2;
+	scanf("%d %d %d %d",&x1,&y1,&x2,&y2);
+	int ans=bfs(x1,y1,x2,y2);
+	printf("%d",ans);
+	return 0;
+}
+```
+
+八向
+
+```
+int dx[] = {-2, -1, 1, 2,  2,  1, -1, -2};
+int dy[] = { 1,  2, 2, 1, -1, -2, -2, -1};
+```
+
+#### ==多源bfs==
+
+描述：a个传染源，求出到b个重点的最短距离
+
+![image-20260609164852370](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609164852370.png)
+
+```c++
+#include <bits/stdc++.h>
+using namespace std;
+const int N=505;
+typedef pair<int,int> PII;
+int n,m,a,b;
+int g[N][N];
+int dist[N][N];
+queue<PII> q;
+
+int dx[] = {-1,0,1,0};
+int dy[] = { 0,1,0,-1};
+
+void bfs(){
+		while(!q.empty()){
+			auto t=q.front();
+			q.pop();
+			for(int z=0;z<4;z++){
+				int a=t.first+dx[z];
+				int b=t.second+dy[z];
+				if(a<1||a>n||b<1||b>m) continue;
+				if(dist[a][b]!=-1) continue;
+					
+				q.push({a,b});
+				dist[a][b]=dist[t.first][t.second]+1;	
+			}
+		}
+}
+int main(){
+	memset(g,-2,sizeof(g));
+	int x1,y1;
+    scanf("%d %d %d %d",&n,&m,&a,&b);
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=m;j++){
+			g[i][j]=-1;
+		}
+	}
+	memset(dist,-1,sizeof(dist));
+	while(a--){
+		scanf("%d %d",&x1,&y1);
+		q.push({x1,y1});  //传染源入队列
+		dist[x1][y1]=0; //设置距离为0
+	}
+	bfs();
+	while(b--){
+		scanf("%d %d",&x1,&y1);
+		printf("%d \n",dist[x1][y1]);//输出所有终点的最短距离
+    }
+	return 0;
+}
+```
+
+#### Flood Fill
+
+![image-20260609221935790](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609221935790.png)
+
+```c
+typedef pair<int,int> PII;
+const int N=1010,M=N*N;
+int n,m;
+char g[N][M];
+PII q[M];
+bool st[N][N];
+void bfs(int sx,itn sy){
+    int hh=0,tt=0;//模拟队列
+    q[0]={sx,sy};
+    st[sx][sy]=true; //标记访问过
+    while(hh<=tt){
+        PII t=q[hh++];
+        for(int i=t.x-1,;i<=t.x+1;i++){//八连通 写两重循环去掉中间
+            for(int j=t.y-1;j<=t.y+1;j++){
+                if(i==t.x&&j==t.y) continue;
+                if(i<0||i>=n||j<0||j>=m) continue;
+                if(g[i][j]=='.'||st[i][j]) continue;
+                q[++tt]={i,j};
+                st[i][j]=true;
+            }
+        }
+    }
+}
+int main(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++){
+        cin>>g[i];
+    }
+    int cnt=0; //连通块数量
+    for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(g[i][j]=='W'&&!st[i][j]){ //该点为水并且该点未被遍历过
+                bfs(i,j);
+                cnt++;
+            }
+        }
+    }
+    cout<<cnt<<endl;
+    return 0;
+}
+```
+
+
+
 ==最短路==
+
+一个地图内 一个点到另一个点的距离
 
 ```c++
 #include <bits/stdc++.h>
@@ -1297,6 +1697,8 @@ int main(){
 ```
 
 ==最小步数==
+
+一种地图状态转换到另一种状态最少要几步
 
 ```c++
 #include <bits/stdc++.h>
@@ -1443,6 +1845,8 @@ int main(){
 ## 动态规划
 
 ### 背包dp
+
+![416.分割等和子集 1](E:\无为者的博客\Algorithm-Notes\图片\20210117171307407.png)
 
 ==01背包==
 
@@ -1676,15 +2080,82 @@ for (int i = 0; i < n; i++) {  //f[j]代表从上面来，f[j-1]代表从左边�
         return f[m - 1];
 ```
 
+### 双字符串dp
 
+==编辑距离==
 
+描述：给你两个单词 `word1` 和 `word2`， *请返回将 `word1` 转换成 `word2` 所使用的最少操作数* 。
 
+可以对一个单词进行如下三种操作：1.插入一个字符 2.删除一个字符 3.替换一个字符
 
+ f[i] [j]->把 `word1` 的前 `i` 个字符，变成 `word2` 的前 `j` 个字符，最少需要多少次操作。
 
+```c++
+class Solution {
+public:
+    int minDistance(string word1, string word2) {
+        int n = word1.size();
+        int m = word2.size();
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = i; //word2 是空串,就只能删
+        }
+        for (int j = 0; j <= m; j++) {
+            dp[0][j] = j; //word1 是空串，就只能添
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (word1[i - 1] == word2[j - 1]) {//最后一个字符相等
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {//最后一个字符不相等
+                    dp[i][j] = min({
+                        dp[i - 1][j] + 1,// 删除
+                        dp[i][j - 1] + 1,// 插入
+                        dp[i - 1][j - 1] + 1// 替换
+                    });
+                }
+            }
+        }
+        return dp[n][m];
+    }
+};
+```
 
+==交错字符串==
 
+描述：问 `s3` 能不能由 `s1` 和 `s2` 交错组成。
 
-==最长上升子序列模型==
+![image-20260609121034451](C:\Users\无为者301\AppData\Roaming\Typora\typora-user-images\image-20260609121034451.png)
+
+```c++
+class Solution {
+public:
+    bool isInterleave(string s1, string s2, string s3) {
+        int n=s1.size();
+        int m=s2.size();
+        if((n+m)!=s3.size()){
+            return false;
+        }
+        vector<vector<bool>> dp(n+1,vector<bool>(m+1,false));//s1 的前 i 个字符 和 s2 的前 j 个字符，能不能组成 s3 的前 i + j 个字符。
+        dp[0][0]=true;
+        for(int i=0;i<=n;i++){
+            for(int j=0;j<=m;j++){
+                //如果最后一个字符来自 s1
+                if(i>0&&dp[i-1][j]&&s1[i-1]==s3[i+j-1]){
+                    dp[i][j]=true;
+                }
+                //如果最后一个字符来自 s2
+                if(j>0&&dp[i][j-1]&&s2[j-1]==s3[i+j-1]){
+                    dp[i][j] = true;
+                }
+            }
+        }
+        return dp[n][m];
+    }
+};
+```
+
+### ==最长上升子序列模型==
 
 001号分支
 
@@ -1795,9 +2266,13 @@ for(int i=1;i<=n;i++){
 
 004分支（最长上升子序列2-结合贪心）
 
+### 最长公共子序列
+
 ### 区间dp
 
-001矩阵连乘
+==矩阵连乘==
+
+描述：给定 `n` 个矩阵 `A1, A2, …, An`, 其中矩阵 `Ai` 的维数为 `p[i-1] × p[i]`(只有相邻矩阵维数匹配才能相乘)。连乘积 `A1A2…An` 不同的加括号方式数乘次数不同。求 **最少数乘次数**。
 
 ```c++
 #include <bits/stdc++.h>
@@ -1830,7 +2305,7 @@ int main() {
 }
 ```
 
-002 环形区间
+==环形区间==
 
 ```c++
 #include <bits/stdc++.h>
@@ -1878,6 +2353,73 @@ int main()
 }
 
 ```
+
+==最长回文子串==
+
+描述：给你一个字符串 `s`，找到 `s` 中最长的回文子串
+
+```c++
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        vector<vector<bool>> dp(n, vector<bool>(n, false));
+        int start = 0;
+        int maxLen = 1;
+        for (int len = 1; len <= n; len++) {
+            for (int l = 0; l + len - 1 < n; l++) {
+                int r = l + len - 1;
+
+                if (len == 1) {
+                    dp[l][r] = true;//[l...r] 是否是回文串
+                } else if (len == 2) {
+                    dp[l][r] = (s[l] == s[r]);//
+                } else {
+                    dp[l][r] = (s[l] == s[r] && dp[l + 1][r - 1]);
+                }
+                if (dp[l][r] && len > maxLen) {
+                    maxLen = len;
+                    start = l;
+                }
+            }
+        }
+        return s.substr(start, maxLen);
+    }
+};
+```
+
+写法2 中心拓展
+
+```c++
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        int start = 0;
+        int maxLen = 1;
+        for (int i = 0; i < n; i++) {
+            expand(s, i, i, start, maxLen);       // 奇数长度回文
+            expand(s, i, i + 1, start, maxLen);   // 偶数长度回文
+        }
+        return s.substr(start, maxLen);
+    }
+
+    void expand(string& s, int l, int r, int& start, int& maxLen) {
+        int n = s.size();
+        while (l >= 0 && r < n && s[l] == s[r]) {
+            l--;
+            r++;
+        }
+        int len = r - l - 1;
+        if (len > maxLen) {
+            maxLen = len;
+            start = l + 1;
+        }
+    }
+};
+```
+
+
 
 ## 贪心
 
@@ -2046,7 +2588,7 @@ return 0
 
 ### 跳跃游戏
 
-````
+````c++
 bool canJump(vector<int>& nums) {
         int res=0;
         for(int i=0;i<nums.size()-1;i++){
